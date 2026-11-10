@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f4f6f8">
+<title>C67 Execução</title>
+<style>
+:root{--bg:#f3f5f7;--panel:#ffffff;--panel2:#f7f8fa;--line:#e0e4e9;--text:#202630;--muted:#697586;--gold:#b88620;--green:#168653;--red:#d94343;--blue:#347fca}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#f8f9fb,#eef1f4 55%);color:var(--text);font:15px system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+.app{max-width:520px;margin:auto;min-height:100vh;padding:18px 16px 34px}
+header{display:flex;align-items:center;gap:13px;padding:5px 0 18px}
+.logo{width:64px;height:64px;border-radius:15px;object-fit:cover;border:1px solid #d5d9df}
+.brand{min-width:0}.brand small{color:#98701c;font-weight:800;letter-spacing:1.8px;font-size:10px}.brand h1{font-size:21px;margin:2px 0 0;letter-spacing:.4px}.brand p{margin:2px 0;color:var(--muted);font-size:11px}
+.version{margin-left:auto;color:#98701c;font-size:10px;font-weight:900;letter-spacing:1px;white-space:nowrap}
+h2{font-size:17px;margin:0 0 5px}.sub{color:var(--muted);font-size:12px;line-height:1.5;margin:0 0 14px}
+.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px;margin:12px 0;box-shadow:0 7px 22px #2430440c}
+.step{display:flex;align-items:center;gap:9px;margin-bottom:12px}.num{width:25px;height:25px;border-radius:8px;background:#fbf2dc;color:#896319;display:grid;place-items:center;font-weight:900;font-size:12px}
+label{display:block;color:#4d5968;font-size:12px;font-weight:700;margin:13px 0 6px}
+input[type=number]{width:100%;background:#fbfcfd;border:1px solid #d9dfe6;border-radius:11px;color:#202630;padding:12px;font-size:17px;font-weight:800;outline:none}
+input:focus{border-color:#c59a3a;box-shadow:0 0 0 3px #c59a3a20}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.cat{padding:11px 9px;border-radius:12px;background:#fafbfd;border:1px solid #e4e8ed}.cat label{margin:0 0 7px;font-size:11px}.cat input{padding:10px 7px;text-align:center;font-size:18px}
+.cat.cola{border-top:3px solid var(--green)}.cat.flavor{border-top:3px solid var(--gold)}.cat.non{border-top:3px solid var(--blue)}
+.btn{border:0;border-radius:12px;padding:13px 15px;font-weight:900;font-size:14px;cursor:pointer;width:100%;margin-top:12px}
+.primary{background:linear-gradient(90deg,#d8ad51,#f0d58e);color:#28200e}.secondary{background:#f0f2f5;color:#303946;border:1px solid #dce1e7}
+.results{display:none}.total{font-size:31px;font-weight:900;letter-spacing:-1px}.muted{color:var(--muted);font-size:11px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px}.bar{height:9px;border-radius:20px;background:#e9edf1;overflow:hidden;margin:8px 0 5px}.fill{height:100%;border-radius:20px}
+.metric{padding:11px 0;border-bottom:1px solid #edf0f3}.metric:last-child{border:0}.metric b{font-size:13px}.metric strong{font-size:18px}
+.delta{font-size:12px;font-weight:800}.good{color:var(--green)}.bad{color:#d94343}.gold{color:#98701c}
+.notice{font-size:11px;color:#566171;line-height:1.5;background:#f3f5f7;border:1px solid #e6e9ed;border-radius:11px;padding:11px;margin-top:12px}
+.footer{text-align:center;color:#8993a0;font-size:10px;padding:18px 0}
+
+.home-menu{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0 18px}
+.menu-tile{border:1px solid #e0e4e9;border-radius:18px;background:linear-gradient(145deg,#fff,#f6f7f9);padding:18px 12px;text-align:left;box-shadow:0 7px 22px #2430440c;cursor:pointer;min-height:128px;color:var(--text)}
+.menu-tile .tile-icon{font-size:30px;display:block;margin-bottom:12px}.menu-tile b{display:block;font-size:16px}.menu-tile small{display:block;color:var(--muted);font-size:11px;line-height:1.4;margin-top:5px}
+.menu-tile.active{border:2px solid #c49a42;background:#fffaf0}
+.view{display:none}.view.active{display:block}
+.field{width:100%;background:#fbfcfd;border:1px solid #d9dfe6;border-radius:11px;color:#202630;padding:13px;font-size:15px;outline:none}
+.field:focus{border-color:#c59a3a;box-shadow:0 0 0 3px #c59a3a20}
+.item-list{margin-top:12px}.item-row{padding:12px 0;border-bottom:1px solid #edf0f3;display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.item-row:last-child{border:0}.item-row b{font-size:12px;line-height:1.4}.item-row small{display:block;color:var(--muted);margin-top:3px}.remove{border:0;background:#fff0f0;color:#c33;border-radius:8px;padding:7px 10px;font-weight:800}
+.share-preview{white-space:pre-wrap;background:#f5f7f9;border:1px dashed #cbd2da;border-radius:12px;padding:12px;font-size:12px;line-height:1.5;color:#303946;min-height:60px}
+.btn.whatsapp{background:#168653;color:#fff}.btn.copy{background:#eef1f4;color:#303946;border:1px solid #dce1e7}
+.back{border:0;background:transparent;color:#98701c;font-weight:800;padding:6px 0;margin-bottom:8px;cursor:pointer}
+
+
+.cover-view{margin:8px 0 20px}.cover-hero{position:relative;overflow:hidden;border-radius:26px;padding:28px 24px 26px;background:radial-gradient(circle at 90% 10%,#ed3442 0,#c8102e 34%,#790d1d 100%);color:#fff;min-height:270px;box-shadow:0 15px 35px #7d10252b}.cover-hero:after{content:"";position:absolute;width:230px;height:230px;border:1px solid #ffffff30;border-radius:50%;right:-85px;bottom:-110px;box-shadow:0 0 0 18px #ffffff0d,0 0 0 38px #ffffff0a}.cover-kicker{font-size:10px;letter-spacing:2.2px;font-weight:900;color:#ffe4a4}.cover-title{font-size:56px;line-height:.92;font-weight:1000;letter-spacing:-3px;margin-top:28px;text-shadow:0 3px 12px #42000a55}.cover-title span{font-size:24px;letter-spacing:5px}.cover-hero p{max-width:250px;font-size:13px;line-height:1.5;color:#ffecef;margin:14px 0 0}.cover-stripe{display:flex;gap:5px;margin-top:20px}.cover-stripe i{height:4px;width:32px;border-radius:8px;background:#1b9b5a}.cover-stripe i:nth-child(2){background:#f4c542}.cover-stripe i:nth-child(3){background:#e9e9e9}.cover-actions{display:grid;gap:12px;margin-top:16px}.cover-action{position:relative;display:grid;grid-template-columns:52px 1fr 22px;grid-template-rows:auto auto;align-items:center;gap:2px 12px;text-align:left;border:1px solid #e0e4e9;border-radius:18px;background:#fff;padding:17px;box-shadow:0 8px 22px #2430440c;color:var(--text);cursor:pointer}.cover-icon{grid-row:1/3;width:48px;height:48px;display:grid;place-items:center;border-radius:14px;background:#fff0f1;font-size:25px}.cover-action b{font-size:15px;letter-spacing:.3px}.cover-action small{font-size:11px;color:var(--muted)}.cover-arrow{grid-column:3;grid-row:1/3;font-size:28px;color:#b88620}.cover-footer{text-align:center;color:#8a929d;font-size:10px;letter-spacing:2px;font-weight:800;margin:22px 0 12px}
+
+
+/* C67 V8 — identidade visual escura e vermelha inspirada na referência */
+:root{--bg:#090a0d;--panel:#17191e;--panel2:#202329;--line:#383b43;--text:#f6f6f7;--muted:#b5bac3;--gold:#e4b84b;--green:#25b86a;--red:#e21b2d;--blue:#55a7e8}
+body{background:radial-gradient(ellipse at 50% -10%,#501017 0,#141216 38%,#08090b 78%);color:var(--text)}
+.app{background:transparent}
+header{border-bottom:1px solid #ffffff18}
+.logo{border:1px solid #ffffff38;box-shadow:0 0 18px #e21b2d30}
+.brand small{color:#ffcf70}.brand p{color:#b9bbc2}
+.card{background:linear-gradient(145deg,#202228,#111317);border:1px solid #454850;box-shadow:0 10px 28px #0008}
+h2,.step h2{color:#fff}
+.sub,.muted{color:#b8bdc6}
+.num{background:#4b111a;color:#ffb9c0}
+label{color:#d4d6dc}
+input[type=number],.field{background:#0e1014;border:1px solid #555963;color:#fff}
+input:focus,.field:focus{border-color:#f12b3e;box-shadow:0 0 0 3px #ed243520}
+.cat{background:#17191e;border-color:#3c4048}
+.cat label{color:#e2e3e7}
+.cat.cola{border-top-color:#25b86a}.cat.flavor{border-top-color:#e4b84b}.cat.non{border-top-color:#55a7e8}
+.btn.primary{background:linear-gradient(100deg,#e20d26,#ff3545);color:#fff;box-shadow:0 7px 18px #b900263b}
+.btn.secondary,.btn.copy{background:#282b32;color:#fff;border:1px solid #4b505b}
+.btn.whatsapp{background:#168653;color:#fff}
+.metric{border-bottom-color:#373a42}.metric b{color:#e8e9ec}.notice{background:#282b31;border-color:#454a54;color:#d3d6dc}
+.bar{background:#3a3e46}.footer{color:#9298a3}
+.back{color:#ff5968}
+.item-row{border-bottom-color:#393d45}.item-row b{color:#fff}.item-row small{color:#b9bec8}
+.remove{background:#481820;color:#ff9da7}
+.share-preview{background:#0f1115;border-color:#555b66;color:#f2f3f5}
+.cover-view{margin-top:12px}
+.cover-hero{background:linear-gradient(90deg,#090a0d 0%,#111116 48%,#171116 100%);border:1px solid #5b2029;box-shadow:0 15px 35px #0009;min-height:320px;padding:25px 22px 22px}
+.cover-hero:before{content:"";position:absolute;inset:0 0 0 43%;background:linear-gradient(90deg,#111116 0%,#11111622 28%,#0000 55%),url('capa-geladeira.jpg') center/cover no-repeat;opacity:.92}
+.cover-hero:after{border-color:#ffffff20;box-shadow:0 0 0 18px #ffffff08,0 0 0 38px #ffffff05}
+.cover-kicker{position:relative;color:#f3c66a}
+.cover-title{position:relative;font-size:58px;text-shadow:0 3px 15px #000}
+.cover-title span{font-size:23px;letter-spacing:4px}
+.cover-hero p{position:relative;color:#f1dfe2;max-width:220px}
+.cover-stripe{position:relative}.cover-stripe i{background:#198d52}.cover-stripe i:nth-child(2){background:#f1c644}.cover-stripe i:nth-child(3){background:#e3273c}
+.cover-actions{gap:12px}
+.cover-action{background:linear-gradient(145deg,#272a30,#131519);border:1px solid #555963;color:#fff;box-shadow:0 8px 24px #0008;min-height:100px}
+.cover-action:active{border-color:#ed263b;background:#35151b}
+.cover-icon{background:linear-gradient(145deg,#55131e,#251015);color:#fff}
+.cover-action small{color:#c2c5cc}.cover-arrow{color:#ff5968}
+.cover-footer{color:#aeb2ba}
+
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+<img class="logo" src="logo-c67.png" alt="Escudo C67">
+<div class="brand"><small>GV GRANDE PORTO ALEGRE</small><h1>C67 EXECUÇÃO</h1><p>Assistente de execução em loja</p></div>
+
+</header>
+<section id="coverView" class="cover-view">
+  <div class="cover-hero">
+    <div class="cover-kicker">GV GRANDE PORTO ALEGRE</div>
+    <div class="cover-title">C67<br><span>EXECUÇÃO</span></div>
+    <p>Ferramentas práticas para a execução perfeita no ponto de venda.</p>
+    <div class="cover-stripe"><i></i><i></i><i></i></div>
+  </div>
+  <div class="cover-actions">
+    <button class="cover-action" id="coverFridge" type="button"><span class="cover-icon">🧊</span><b>GELADEIRA</b><small>Calculadora de distribuição</small><span class="cover-arrow">›</span></button>
+    <button class="cover-action" id="coverRupture" type="button"><span class="cover-icon">📋</span><b>ITENS EM FALTA</b><small>Ruptura e sugestão de pedido</small><span class="cover-arrow">›</span></button>
+  </div>
+  <div class="cover-footer">FOCO · DISCIPLINA · RESULTADO</div>
+</section>
+<nav class="home-menu" aria-label="Módulos do aplicativo" style="display:none">
+<button class="menu-tile active" id="goFridge" type="button"><span class="tile-icon">🧊</span><b>GELADEIRA</b><small>Calculadora de distribuição e visualização do abastecimento</small></button>
+<button class="menu-tile" id="goRupture" type="button"><span class="tile-icon">📋</span><b>ITENS EM FALTA</b><small>Registrar ruptura e sugerir quantidade para reposição</small></button>
+</nav>
+<div id="fridgeView" class="view">
+<button class="back" id="backHomeFridge" type="button">← VOLTAR À CAPA</button>
+<section class="card">
+<div class="step"><span class="num">1</span><h2>Informe a contagem</h2></div>
+<p class="sub">Informe o total de frentes e quantas pertencem a cada categoria. A soma é conferida automaticamente.</p>
+<label for="total">Total de frentes da geladeira</label>
+<input id="total" type="number" min="0" max="500" value="0" placeholder="0">
+<div class="grid">
+<div class="cat cola"><label for="colas">Colas · 50%</label><input id="colas" type="number" min="0" value="0" placeholder="0"></div>
+<div class="cat flavor"><label for="sabores">Sabores · 30%</label><input id="sabores" type="number" min="0" value="0" placeholder="0"></div>
+<div class="cat non"><label for="nao">Não carb. · 20%</label><input id="nao" type="number" min="0" value="0" placeholder="0"></div>
+</div>
+<button class="btn primary" id="calc">CALCULAR DISTRIBUIÇÃO</button>
+</section>
+
+<section class="card results" id="results">
+<div class="step"><span class="num">2</span><h2>Resultado da execução</h2></div>
+<div class="row"><div><div class="muted">Frentes contabilizadas</div><div class="total" id="counted">0/0</div></div><div style="text-align:right"><div class="muted">Aderência ao padrão</div><div class="total gold" id="adherence">—</div></div></div>
+<div id="metrics"></div>
+<div class="notice" id="advice"></div>
+
+</section>
+<div class="footer">C67 • FOCO · DISCIPLINA · RESULTADO</div>
+</div>
+<section id="ruptureView" class="view">
+<button class="back" id="backHome" type="button">← VOLTAR À CAPA</button>
+<section class="card">
+<div class="step"><span class="num">1</span><h2>Registrar item em falta</h2></div>
+<p class="sub">Selecione o produto que está em ruptura e informe a quantidade sugerida para reposição.</p>
+<label for="productSelect">Produto em falta</label>
+<select id="productSelect" class="field"><option value="">Selecione um produto da lista</option><option value="COCA-COLA ZERO - PET 200ML">COCA-COLA ZERO - PET 200ML</option><option value="COCA-COLA ORIGINAL - LATA 350ML OU LATA SLEEK 310ML">COCA-COLA ORIGINAL - LATA 350ML OU LATA SLEEK 310ML</option><option value="SPRITE - LATA 350ML">SPRITE - LATA 350ML</option><option value="FANTA - LATA 350ML">FANTA - LATA 350ML</option><option value="COCA-COLA ORIGINAL - PET 600ML">COCA-COLA ORIGINAL - PET 600ML</option><option value="COCA-COLA ORIGINAL - PET 1,5L OU PET 1L">COCA-COLA ORIGINAL - PET 1,5L OU PET 1L</option><option value="SPRITE LEMON FRESH - PET 1,5L OU SCHWEPPES - PET 1,5L">SPRITE LEMON FRESH - PET 1,5L OU SCHWEPPES - PET 1,5L</option><option value="COCA-COLA ORIGINAL - PET 2L">COCA-COLA ORIGINAL - PET 2L</option><option value="COCA-COLA ZERO - PET 2L OU PET 1,5L">COCA-COLA ZERO - PET 2L OU PET 1,5L</option><option value="FANTA - PET 2L">FANTA - PET 2L</option><option value="SPRITE - PET 2L">SPRITE - PET 2L</option><option value="CHARRUA - PET 2L">CHARRUA - PET 2L</option><option value="COCA-COLA ORIGINAL - PET 3L">COCA-COLA ORIGINAL - PET 3L</option><option value="COCA-COLA ZERO - LATA 350ML OU LATA 310ML">COCA-COLA ZERO - LATA 350ML OU LATA 310ML</option><option value="COCA-COLA ORIGINAL - PET 200ML">COCA-COLA ORIGINAL - PET 200ML</option><option value="MULTIPACK DECORADO COCA-COLA ORIGINAL - LATA 350ML">MULTIPACK DECORADO COCA-COLA ORIGINAL - LATA 350ML</option><option value="MULTIPACK DECORADO COCA-COLA PET 200ML">MULTIPACK DECORADO COCA-COLA PET 200ML</option><option value="FANTA LARANJA OU SPRITE - PET 200ML">FANTA LARANJA OU SPRITE - PET 200ML</option><option value="DUAL COCA-COLA ORIGINAL + FANTA LARANJA">DUAL COCA-COLA ORIGINAL + FANTA LARANJA</option><option value="DUAL COCA-COLA ORIGINAL + SPRITE">DUAL COCA-COLA ORIGINAL + SPRITE</option><option value="CRYSTAL C/GÁS OU CRYSTAL S/G - PET 1,5L">CRYSTAL C/GÁS OU CRYSTAL S/G - PET 1,5L</option><option value="CRYSTAL C/GÁS OU CRYSTAL S/G - PET 500ML OU CRYSTAL SABORES - PET 510ML">CRYSTAL C/GÁS OU CRYSTAL S/G - PET 500ML OU CRYSTAL SABORES - PET 510ML</option><option value="POWERADE MOUNTAIN BLAST REGULAR - PET 500ML">POWERADE MOUNTAIN BLAST REGULAR - PET 500ML</option><option value="DEL VALLE KAPO - TP 200ML">DEL VALLE KAPO - TP 200ML</option><option value="DEL VALLE FRUT - PET 450ML">DEL VALLE FRUT - PET 450ML</option><option value="DEL VALLE NÉCTAR - LT 290ML">DEL VALLE NÉCTAR - LT 290ML</option><option value="DEL VALLE NÉCTAR - PET 1L">DEL VALLE NÉCTAR - PET 1L</option><option value="DEL VALLE FRUT - PET 1,5L">DEL VALLE FRUT - PET 1,5L</option><option value="1 ITEM ARTD (SPRITE ABSOLUT OU SCHWEPPES MIXED)">1 ITEM ARTD (SPRITE ABSOLUT OU SCHWEPPES MIXED)</option></select>
+<label for="suggestedQty">Quantidade sugerida (CF — caixa física)</label>
+<input id="suggestedQty" type="number" min="1" step="1" placeholder="Ex.: 12 caixas">
+<button class="btn primary" id="addItem" type="button">ADICIONAR ITEM À LISTA</button>
+</section>
+<section class="card">
+<div class="row"><h2>Itens selecionados</h2><span class="muted" id="itemCount">0 itens</span></div>
+<div id="itemList" class="item-list"><p class="sub">Nenhum item adicionado ainda.</p></div>
+<div class="step" style="margin-top:18px"><span class="num">1</span><h2>Identificação da loja</h2></div>
+<p class="sub">Preenchimento opcional. Se informar, os dados também irão na mensagem do WhatsApp.</p>
+<label for="storeName">Nome fantasia da loja (opcional)</label>
+<input id="storeName" class="field" type="text" placeholder="Ex.: Loja Centro">
+<label for="storeCode">Matrícula (opcional)</label>
+<input id="storeCode" class="field" type="text" inputmode="numeric" placeholder="Matrícula da loja">
+<label for="promoterName">Nome do promotor (opcional)</label>
+<input id="promoterName" class="field" type="text" placeholder="Nome do promotor">
+<label for="notes">Observação (opcional)</label>
+<input id="notes" class="field" type="text" placeholder="Ex.: priorizar reposição no próximo pedido">
+<div class="step" style="margin-top:18px"><span class="num">2</span><h2>Mensagem para WhatsApp</h2></div>
+<div id="messagePreview" class="share-preview">Adicione pelo menos um produto para montar a mensagem.</div>
+<button class="btn copy" id="copyMessage" type="button">COPIAR MENSAGEM</button>
+<p class="muted" style="margin-top:9px">Copie a mensagem e cole diretamente na conversa ou no grupo do WhatsApp.</p>
+</section>
+</section>
+<script>
+const $=id=>document.getElementById(id);
+function calc(){
+ const total=Math.max(0,Math.floor(+$('total').value||0));
+ const vals=[Math.max(0,Math.floor(+$('colas').value||0)),Math.max(0,Math.floor(+$('sabores').value||0)),Math.max(0,Math.floor(+$('nao').value||0))];
+ const names=['Colas','Sabores','Não carbonatados'],targets=[.5,.3,.2],colors=['#22b573','#e5b84b','#58a6ff'];
+ const counted=vals.reduce((a,b)=>a+b,0);
+ const target=[Math.floor(total*.5),Math.floor(total*.3),0];target[2]=total-target[0]-target[1];
+ const metrics=names.map((name,i)=>{
+  const pct=counted?vals[i]/counted*100:0,goal=targets[i]*100,diff=target[i]-vals[i];
+  return `<div class="metric"><div class="row"><b>${name}</b><span class="muted">${pct.toFixed(1).replace('.',',')}% atual · ${goal}% meta</span></div><div class="bar"><div class="fill" style="width:${Math.min(100,pct)}%;background:${colors[i]}"></div></div><div class="row"><span class="muted">Atual: ${vals[i]} frentes · Meta: ${target[i]}</span><span class="delta ${diff>0?'bad':diff<0?'good':'gold'}">${diff>0?'+'+diff+' necessárias':diff<0?Math.abs(diff)+' a mais':'OK'}</span></div></div>`;
+ }).join('');
+ const adherence=total?Math.max(0,100-(Math.abs(vals[0]-(counted*.5))+Math.abs(vals[1]-(counted*.3))+Math.abs(vals[2]-(counted*.2)))/Math.max(1,counted)*50):0;
+ $('counted').textContent=counted+'/'+total;
+ $('adherence').textContent=adherence.toFixed(0)+'%';
+ $('metrics').innerHTML=metrics;
+ let advice=counted!==total?`Atenção: a soma das categorias (${counted}) não corresponde ao total informado (${total}). Confira a contagem.`:
+ `Para atingir a distribuição de referência em ${total} frentes: ${target[0]} colas, ${target[1]} sabores e ${target[2]} não carbonatados.`;
+ $('advice').textContent=advice;
+ $('results').style.display='block';
+ $('results').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+const ruptureItems=[];
+function showView(which){
+ $('coverView').style.display='none';
+ const isFridge=which==='fridge';
+ $('fridgeView').classList.toggle('active',isFridge);$('ruptureView').classList.toggle('active',!isFridge);
+ $('goFridge').classList.toggle('active',isFridge);$('goRupture').classList.toggle('active',!isFridge);
+ window.scrollTo({top:0,behavior:'smooth'});
+}
+$('goFridge').addEventListener('click',()=>showView('fridge'));
+$('goRupture').addEventListener('click',()=>showView('rupture'));
+function backToCover(){ $('fridgeView').classList.remove('active'); $('ruptureView').classList.remove('active'); $('coverView').style.display='block'; window.scrollTo({top:0,behavior:'smooth'}); }
+$('backHome').addEventListener('click',backToCover);
+$('backHomeFridge').addEventListener('click',backToCover);
+$('coverFridge').addEventListener('click',()=>showView('fridge'));
+$('coverRupture').addEventListener('click',()=>showView('rupture'));
+function makeMessage(){
+ const store=$('storeName').value.trim(),code=$('storeCode').value.trim(),promoter=$('promoterName').value.trim(),notes=$('notes').value.trim();
+ let msg='*C67 EXECUÇÃO | ITENS EM FALTA*';
+ if(store)msg+='\nNome fantasia da loja: '+store;
+ if(code)msg+='\nMatrícula da loja: '+code;
+ if(promoter)msg+='\nPromotor: '+promoter;
+ msg+='\n\n*Itens em falta / sugestão de pedido:*';
+ ruptureItems.forEach((it,i)=>{msg+=`\n${i+1}. ${it.name} — *${it.qty} CF (caixa física)*`;});
+ if(notes)msg+='\n\nObservação: '+notes;
+ msg+='\n\nEnviado pelo C67 Execução.';
+ return msg;
+}
+function renderItems(){
+ $('itemCount').textContent=ruptureItems.length+' '+(ruptureItems.length===1?'item':'itens');
+ $('itemList').innerHTML=ruptureItems.length?ruptureItems.map((it,i)=>`<div class="item-row"><div><b>${it.name}</b><small>Quantidade sugerida: ${it.qty} CF (caixa física)</small></div><button class="remove" type="button" data-remove="${i}">REMOVER</button></div>`).join(''):'<p class="sub">Nenhum item adicionado ainda.</p>';
+ $('messagePreview').textContent=ruptureItems.length?makeMessage():'Adicione pelo menos um produto para montar a mensagem.';
+ document.querySelectorAll('[data-remove]').forEach(btn=>btn.addEventListener('click',()=>{ruptureItems.splice(Number(btn.dataset.remove),1);renderItems()}));
+}
+$('addItem').addEventListener('click',()=>{
+ const name=$('productSelect').value,qty=Math.floor(Number($('suggestedQty').value));
+ if(!name){alert('Selecione um produto.');return}if(!Number.isFinite(qty)||qty<1){alert('Informe uma quantidade sugerida maior que zero.');return}
+ const existing=ruptureItems.find(x=>x.name===name);
+ if(existing)existing.qty+=qty;else ruptureItems.push({name,qty});
+ $('productSelect').value='';$('suggestedQty').value='';renderItems();
+});
+$('storeName').addEventListener('input',renderItems);$('storeCode').addEventListener('input',renderItems);$('notes').addEventListener('input',renderItems);
+$('copyMessage').addEventListener('click',async()=>{
+ if(!ruptureItems.length){alert('Adicione pelo menos um item.');return}
+ const msg=makeMessage();
+ try{await navigator.clipboard.writeText(msg);alert('Mensagem copiada! Agora é só colar no WhatsApp.')}catch(e){const ta=document.createElement('textarea');ta.value=msg;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();alert('Mensagem copiada! Agora é só colar no WhatsApp.')}
+});
+
+
+$('calc').addEventListener('click',calc);
+['total','colas','sabores','nao'].forEach(id=>$(id).addEventListener('input',()=>{$('results').style.display='none'}));
+$('results').style.display='none';
+</script>
+</body></html>
